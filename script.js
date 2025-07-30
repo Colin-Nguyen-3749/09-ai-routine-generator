@@ -3,8 +3,19 @@ document.getElementById('routineForm').addEventListener('submit', async (e) => {
   // Prevent the form from refreshing the page
   e.preventDefault();
   
-  // TODO: Get values from all inputs and store them in variables
-  
+  // Get values from all form inputs
+  const timeOfDay = document.getElementById('timeOfDay').value;
+  const focusArea = document.getElementById('focusArea').value;
+  const timeAvailable = document.getElementById('timeAvailable').value;
+  const energyLevel = document.getElementById('energyLevel').value;
+
+  // Get selected activities from checkboxes
+  const activityCheckboxes = document.querySelectorAll('input[name="activities"]:checked');
+  const preferredActivities = Array.from(activityCheckboxes).map(checkbox => checkbox.value);
+
+  // Update the user message in the API request
+  const userMessage = `Plan a personalized daily routine based on the following preferences:\n- Time of day: ${timeOfDay}\n- Focus area: ${focusArea}\n- Time available: ${timeAvailable} minutes\n- Energy level: ${energyLevel}\n- Preferred activities: ${preferredActivities.join(', ')}`;
+
   // Find the submit button and update its appearance to show loading state
   const button = document.querySelector('button[type="submit"]');
   button.textContent = 'Generating...';
@@ -22,7 +33,7 @@ document.getElementById('routineForm').addEventListener('submit', async (e) => {
         model: 'gpt-4o',
         messages: [      
           { role: 'system', content: `You are a helpful assistant that creates quick, focused daily routines. Always keep routines short, realistic, and tailored to the user's preferences.` },
-          { role: 'user', content: '' }
+          { role: 'user', content: userMessage }
         ],
         temperature: 0.7,
         max_completion_tokens: 500
