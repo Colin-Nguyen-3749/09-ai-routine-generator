@@ -16,6 +16,16 @@ document.getElementById('routineForm').addEventListener('submit', async (e) => {
   // Update the user message in the API request
   const userMessage = `Plan a personalized daily routine based on the following preferences:\n- Time of day: ${timeOfDay}\n- Focus area: ${focusArea}\n- Time available: ${timeAvailable} minutes\n- Energy level: ${energyLevel}\n- Preferred activities: ${preferredActivities.join(', ')}`;
 
+  // Save user preferences to localStorage
+  const preferences = {
+    timeOfDay,
+    focusArea,
+    timeAvailable,
+    energyLevel,
+    preferredActivities
+  };
+  localStorage.setItem('routinePreferences', JSON.stringify(preferences));
+
   // Find the submit button and update its appearance to show loading state
   const button = document.querySelector('button[type="submit"]');
   button.textContent = 'Generating...';
@@ -56,5 +66,22 @@ document.getElementById('routineForm').addEventListener('submit', async (e) => {
     // Always reset the button back to its original state using innerHTML to render the icon
     button.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate My Routine';
     button.disabled = false;
+  }
+});
+
+// Load preferences from localStorage when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  const savedPreferences = JSON.parse(localStorage.getItem('routinePreferences'));
+  if (savedPreferences) {
+    document.getElementById('timeOfDay').value = savedPreferences.timeOfDay;
+    document.getElementById('focusArea').value = savedPreferences.focusArea;
+    document.getElementById('timeAvailable').value = savedPreferences.timeAvailable;
+    document.getElementById('energyLevel').value = savedPreferences.energyLevel;
+
+    // Restore checkbox selections
+    const activityCheckboxes = document.querySelectorAll('input[name="activities"]');
+    activityCheckboxes.forEach(checkbox => {
+      checkbox.checked = savedPreferences.preferredActivities.includes(checkbox.value);
+    });
   }
 });
